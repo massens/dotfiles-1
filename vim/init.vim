@@ -24,7 +24,6 @@ Plug 'danro/rename.vim',            { 'commit': 'f133763' }
 Plug 'af/YankRing.vim',             { 'commit': '0e4235b', 'on': [] }   " using fork, as v18 isn't officially on GH
 Plug 'tpope/vim-obsession',         { 'commit': '4ab72e0' }     " start a session file with :Obsession
 Plug 'dyng/ctrlsf.vim',             { 'commit': 'b48ed49' }
-Plug 'jeetsukumaran/vim-filebeagle',{ 'commit': 'abfb7f9' }
 Plug 'junegunn/vim-xmark',          { 'commit': '6dd673a', 'do': 'make', 'for': 'markdown' }
 Plug 'mbbill/undotree',             { 'commit': '39e5cf0' }
 Plug 'troydm/zoomwintab.vim',       { 'commit': 'b7a940e' }
@@ -248,8 +247,65 @@ let g:list_of_insert_keys = []
 " vim-diminactive
 let g:diminactive_enable_focus = 1
 
-" FileBeagle
-let g:filebeagle_show_hidden = 1        " Use 'gh' to toggle- FileBeagle hides lots by default
+" NetRW customizations
+let g:netrw_banner = 0          " use I to toggle it if you really want to see it
+let g:netrw_liststyle = 3       " tree-style display
+let g:netrw_liststyle = 2
+let g:netrw_browse_split = 4    " open files in previous window
+let g:netrw_altv = 1
+
+" Old attempt at drawer toggling
+" Note: opening with the path appears to disable toggling Lexplore off with "-"
+" This is fixed in the following implementation
+"nmap - :15Lexplore<CR>
+
+" use "-" in normal mode to open netrw in a left "drawer", relative to the current file
+" This implementation stolen from http://ivanbrennan.nyc/blog/2014/01/16/rigging-vims-netrw/
+" (see his dotfiles circa late 2014, before he switched to vinegar)
+noremap <silent> - :call VexToggle(expand('%:h:p'))<CR>
+fun! VexToggle(dir)
+  if exists("t:vex_buf_nr")
+    call VexClose()
+  else
+    call VexOpen(a:dir)
+  endif
+endf
+
+fun! VexOpen(dir)
+  let vex_width = 23
+
+  exe "Vexplore " . a:dir
+  let t:vex_buf_nr = bufnr("%")
+  wincmd H
+
+  call VexSize(vex_width)
+endf
+
+fun! VexClose()
+  let cur_win_nr = winnr()
+  let target_nr = ( cur_win_nr == 1 ? winnr("#") : cur_win_nr )
+
+  1wincmd w
+  close
+  unlet t:vex_buf_nr
+
+  exe (target_nr - 1) . "wincmd w"
+  call NormalizeWidths()
+endf
+
+fun! VexSize(vex_width)
+  exe "vertical resize" . a:vex_width
+  set winfixwidth
+  call NormalizeWidths()
+endf
+
+fun! NormalizeWidths()
+  let eadir_pref = &eadirection
+  set eadirection=hor
+  set equalalways! equalalways!
+  let &eadirection = eadir_pref
+endf
+
 
 " Load matchit.vim, but only if the user hasn't installed a newer version.
 if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
