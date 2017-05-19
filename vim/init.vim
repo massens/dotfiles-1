@@ -28,7 +28,7 @@ Plug 'mbbill/undotree',             { 'commit': '39e5cf0' }
 Plug 'troydm/zoomwintab.vim',       { 'commit': 'b7a940e' }
 Plug 'blueyed/vim-diminactive',     { 'commit': '5cb27ae' }
 Plug 'takac/vim-hardtime',          { 'commit': 'acf59c8' }
-Plug 'Valloric/ListToggle',         { 'commit': '2bc7857' }
+Plug 'romainl/vim-qf'
 
 " FZF and friends
 Plug 'junegunn/fzf',                { 'tag': '0.16.6', 'dir': '~/.fzf', 'do': './install --all' }
@@ -276,9 +276,10 @@ if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
     runtime! macros/matchit.vim
 endif
 
-" ListToggle
-let g:lt_location_list_toggle_map = '<leader>l'
-let g:lt_quickfix_list_toggle_map = '<leader>q'
+" vim-qf for quickfix/loclist management and movement
+nmap <leader>l <Plug>(qf_loc_toggle_stay)
+nnoremap <silent> [l  <Plug>(qf_loc_previous)
+nnoremap <silent> ]l  <Plug>(qf_loc_next)
 
 " FZF
 " More tips: https://github.com/junegunn/fzf/wiki/Examples-(vim)
@@ -501,10 +502,6 @@ autocmd BufLeave *.js,*.jsx
 
 " ProTip: After opening a file with a global mark, you can change vim's cwd to
 " the file's location with ":cd %:h"
-
-" Move between errors (using ale)
-nnoremap <silent> [l  <Plug>(ale_previous_wrap)
-nnoremap <silent> ]l  <Plug>(ale_next_wrap)
 
 "===============================================================================
 " Key Bindings: Misc
